@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import FeaturedProducts from'./FeaturedProducts'
-
+import ProductList from './men';
 const Body= () => {
     return (
     <>
@@ -23,6 +23,7 @@ const Body= () => {
     </section>
 
     <FeaturedProducts />
+    <ProductList/>
     </>
     );
 };

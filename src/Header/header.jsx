@@ -1,4 +1,6 @@
+import { Home } from 'lucide-react';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 
 const Header = () => {
@@ -7,11 +9,11 @@ const Header = () => {
      <>
      <nav className="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 z-50">
         <div className="max-w-7xl mx-auto flex items-center justify-between py-4 px-6 md:px-12">
-        <a href="#" aria-label="Nike Indonesia" className="flex items-center">
+        <Link to="/" href="#" aria-label="Nike Indonesia" className="flex items-center">
             <svg className="h-12 w-auto text-black" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" >
             <path d="M21 8.719L7.836 14.303C6.74 14.768 5.818 15 5.075 15c-.836 0-1.445-.295-1.819-.884-.485-.76-.273-1.982.559-3.272.494-.754 1.122-1.446 1.734-2.108-.144.234-1.415 2.349-.025 3.345.275.2.666.298 1.147.298.386 0 .829-.063 1.316-.19L21 8.719z" fill="currentColor"/>
             </svg>
-        </a>
+        </Link>
         <nav className="hidden md:flex space-x-10 font-semibold text-sm text-gray-900 tracking-wide uppercase">
             <a href="#" className="hover:text-red-600 transition">New & Featured</a>
             <a href="#" className="hover:text-red-600 transition">Men</a>
@@ -34,6 +36,9 @@ const Header = () => {
                 <circle cx="17" cy="21" r="1" />
             </svg>
             <span className="absolute -top-1 -right-1 text-xs bg-red-600 text-white rounded-full w-4 h-4 flex items-center justify-center font-bold">0</span>
+            </button>
+            <button className="hover:text-red-600 transition relative">
+              <Link to="./login" className='text-2xl'>Login</Link>
             </button>
         </div>
         </div>
