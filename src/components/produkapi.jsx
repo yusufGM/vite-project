@@ -1,4 +1,4 @@
-import { Button } from "../ui/button"
+import { Button } from "./ui/button"
 import {
   Card,
   CardAction,
@@ -7,8 +7,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "../ui/card"
-import useCartStore from "../store/useCartStore" // ✅ Tambahkan ini
+} from "./ui/card"
+import useCartStore from "./store/useCartStore" // ✅ Tambahkan ini
 
 const ProdukItem = ({ name, image, price }) => {
   const { addToCart, openDrawer } = useCartStore() // ✅ Panggil store-nya

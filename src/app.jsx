@@ -12,8 +12,8 @@ const Newfeatured = lazy(() => import('./Pages/new&featured'));
 const Salepage = lazy(() => import('./Pages/sale'));
 const Womenpage = lazy(() => import('./Pages/women'));
 const Snkrspage = lazy(() => import('./Pages/snkrs'));
-import { Outlet } from 'react-router-dom';
-import CartDrawer from './components/components/CartDrawer';
+import CartDrawer from './components/CartDrawer';
+
 function App() {
   return (
     <Suspense fallback={<div className="p-4 text-center ">Loading...</div>}>

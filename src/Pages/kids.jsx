@@ -1,4 +1,4 @@
-import KidProduct from "../components/components/kidProduct"
+import KidProduct from "../components/kidProduct"
 
 
 

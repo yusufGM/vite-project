@@ -1,5 +1,5 @@
-import ProductList from "../components/components/"
-import ProdukItem from "../components/components/produkapi"
+
+import ProdukItem from "../components/produkapi"
 
 
  function Newfeatured () {
