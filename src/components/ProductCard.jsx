@@ -1,5 +1,5 @@
 import React from 'react';
-import useCartStore from '../store/useCartStore'; // sesuaikan path jika berbeda
+import useCartStore from './store/useCartStore'; // sesuaikan path jika berbeda
 
 const ProductCard = ({ name, price, image }) => {
   const { addToCart, openDrawer } = useCartStore();

@@ -1,5 +1,5 @@
 
-import FeaturedProducts from'../components/components/FeaturedProducts'
+import FeaturedProducts from'./FeaturedProducts'
 const Body= () => {
     return (
     <>
