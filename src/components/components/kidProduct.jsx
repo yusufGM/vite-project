@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import ProdukItem from './produkapi';
 
-const ProductList = () => {
+
+const KidProduct = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -33,21 +35,14 @@ const ProductList = () => {
     }
 
     return (
-        <div>
-            <h1>Product List</h1>
-            <ul>
-                {products.map(product => (
-                    <li key={product.id}>
-                        <h2>{product.title}</h2>
-                        <img src={product.image} alt={product.title} />
-                        <p>{product.description}</p>
-                        <p>Price: ${product.price}</p>
-                        <p>Rating: {product.rating.rate} ({product.rating.count} reviews)</p>
-                    </li>
+        <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 py-24">
+            <div className='grid gap-5 sm:grid-cols-2'>
+                {products && products.map((a, index) => (
+                    <ProdukItem name={a.title} price={a.price} key={a.id}  image={a.image} />
                 ))}
-            </ul>
+            </div>
         </div>
     );
 };
 
-export default ProductList;
+export default KidProduct;
