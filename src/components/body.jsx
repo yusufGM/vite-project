@@ -1,6 +1,5 @@
-import { useState } from 'react';
-import FeaturedProducts from'./FeaturedProducts'
-import ProductList from './men';
+
+import FeaturedProducts from'../components/components/FeaturedProducts'
 const Body= () => {
     return (
     <>
@@ -23,7 +22,6 @@ const Body= () => {
     </section>
 
     <FeaturedProducts />
-    <ProductList/>
     </>
     );
 };

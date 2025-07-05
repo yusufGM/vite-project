@@ -10,12 +10,11 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import Header from "./Header/header"
+import Header from "../components/header"
 
 function Login() {
   return (
     <>
-    <Header /> 
     <Card className="mt-40 mx-auto w-full max-w-sm bg-white p-6 rounded-xl shadow-md">
       <CardHeader>
         <CardTitle>Login to your account</CardTitle>
