@@ -14,15 +14,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-function Login() {
+function Signup() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
 
-    const res = await fetch("http://localhost:5000/login", {
+    const res = await fetch("http://localhost:5000/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password }),
@@ -30,29 +30,27 @@ function Login() {
 
     const data = await res.json();
     if (res.ok) {
-      alert("Login berhasil");
-      // bisa navigate('/dashboard') di sini
+      alert("Signup berhasil, silakan login");
+      navigate("/");
     } else {
-      alert(data.error || "Login gagal");
+      alert(data.error || "Signup gagal");
     }
   };
 
   return (
     <Card className="mt-40 mx-auto w-full max-w-sm bg-white p-6 rounded-xl shadow-md">
       <CardHeader>
-        <CardTitle>Login to your account</CardTitle>
-        <CardDescription>
-          Enter your username to login to your account
-        </CardDescription>
+        <CardTitle>Create your account</CardTitle>
+        <CardDescription>Sign up with a username and password</CardDescription>
         <CardAction>
-          <Button variant="link" onClick={() => navigate("/signup")}>
-            Sign Up
+          <Button variant="link" onClick={() => navigate("/login")}>
+            Already have an account?
           </Button>
         </CardAction>
       </CardHeader>
 
       <CardContent>
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleSignup}>
           <div className="flex flex-col gap-6">
             <div className="grid gap-2">
               <Label htmlFor="username">Username</Label>
@@ -79,10 +77,10 @@ function Login() {
 
           <CardFooter className="flex-col gap-2 mt-6">
             <Button type="submit" className="w-full">
-              Login
+              Sign Up
             </Button>
             <Button variant="outline" className="w-full" disabled>
-              Login with Google
+              Sign up with Google
             </Button>
           </CardFooter>
         </form>
@@ -91,4 +89,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default Signup;

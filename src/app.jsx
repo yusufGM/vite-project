@@ -6,6 +6,7 @@ import Footer from './components/footer';
 
 const Home = lazy(() => import('./Pages/home'));
 const Login = lazy(() => import('./Pages/login'));
+const Signup = lazy(() => import('./Pages/signup'));
 const Menpage = lazy(() => import('./Pages/men'));
 const Kidspage = lazy(() => import('./Pages/kids'));
 const Newfeatured = lazy(() => import('./Pages/new&featured'));
@@ -23,6 +24,7 @@ function App() {
       <Routes  className="min-h-screen flex flex-col">
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
+         <Route path="/signup" element={<Signup />} />
         <Route path="/menpage" element={<Menpage />} />
         <Route path="/kidspage" element={<Kidspage />} />
         <Route path="/newfeature" element={<Newfeatured />} />
