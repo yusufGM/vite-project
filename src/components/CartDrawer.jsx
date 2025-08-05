@@ -1,10 +1,13 @@
 import { useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import useCartStore from "./store/useCartStore";
+import useUserStore from "./store/useUserStore";
 
 function CartDrawer() {
-  
-    const drawerRef = useRef();
+  const drawerRef = useRef();
+  const navigate = useNavigate();
   const { isOpen, cart, closeDrawer, updateQty, removeItem } = useCartStore();
+  const { token } = useUserStore();
 
   const total = cart.reduce((sum, p) => sum + p.price * p.qty, 0);
 
@@ -14,21 +17,31 @@ function CartDrawer() {
         closeDrawer();
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen, closeDrawer]);
 
   if (!isOpen) return null;
+
+  const handleCheckout = (e) => {
+    e.preventDefault();
+
+    if (!token) {
+      alert("Silakan login terlebih dahulu.");
+      navigate("/login");
+      return;
+    }
+
+    closeDrawer();
+    navigate("/checkout");
+  };
 
   return (
     <aside
       ref={drawerRef}
       id="drawer"
-      className={`transition-transform duration-300 ease-in-out fixed top-0 right-0 h-full w-116 bg-gray-900 shadow-lg flex flex-col z-100  border border-r-12 border-gray-900 ${
-        isOpen ? 'translate-x-0' : 'translate-x-full'
+      className={`transition-transform duration-300 ease-in-out fixed top-0 right-0 h-full w-116 bg-gray-900 shadow-lg flex flex-col z-100 border border-r-12 border-gray-900 ${
+        isOpen ? "translate-x-0" : "translate-x-full"
       }`}
     >
       <div className="p-6 border-b">
@@ -40,10 +53,13 @@ function CartDrawer() {
           <p className="text-white text-center">Keranjang kosong.</p>
         ) : (
           cart.map((item, idx) => (
-            <div key={idx} className="item grid grid-cols-[50px_130px_100px_1fr_30px] gap-1 text-center items-center p-2">
+            <div
+              key={idx}
+              className="item grid grid-cols-[50px_130px_100px_1fr_30px] gap-1 text-center items-center p-2"
+            >
               <img src={item.imgSrc} alt={item.name} className="w-full h-auto" />
               <div className="name text-white">{item.name}</div>
-              <div className="text-white">USD. {item.price.toLocaleString('id-ID')}</div>
+              <div className="text-white">Rp {item.price.toLocaleString("id-ID")}</div>
               <input
                 type="number"
                 min="0"
@@ -55,11 +71,12 @@ function CartDrawer() {
                 onClick={() => removeItem(idx)}
                 className="text-red-500 hover:text-red-700 text-xl"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="3 6 5 6 21 6" />
-                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
-                <path d="M10 11v6M14 11v6" />
-                <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                  stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="3 6 5 6 21 6" />
+                  <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                  <path d="M10 11v6M14 11v6" />
+                  <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
                 </svg>
               </button>
             </div>
@@ -68,16 +85,10 @@ function CartDrawer() {
       </div>
 
       <div className="total border-t border-gray-200 p-3 text-white text-center">
-        Total: USD. <span id="totalPrice">{total.toLocaleString('id-ID')}</span>
+        Total: Rp <span id="totalPrice">{total.toLocaleString("id-ID")}</span>
       </div>
 
-      <form
-        onSubmit={(e) => {
-          e.preventDefault()
-          alert('Yey Happy Shopping!')
-        }}
-        className="p-4"
-      >
+      <form onSubmit={handleCheckout} className="p-4">
         <div className="flex justify-end gap-3 border-t border-gray-200 pt-4">
           <button
             type="submit"
@@ -95,6 +106,7 @@ function CartDrawer() {
         </div>
       </form>
     </aside>
-  )
+  );
 }
-export default CartDrawer
+
+export default CartDrawer;

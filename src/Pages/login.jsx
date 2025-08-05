@@ -1,94 +1,107 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import useUserStore from '../components/store/useUserStore';
 
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-
-function Login() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+const Login = () => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const { setUser } = useUserStore();
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    try {
+      const res = await fetch("http://localhost:5000/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
 
-    const res = await fetch("http://localhost:5000/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
-    });
+      if (!res.ok) {
+        const err = await res.json();
+        alert(err.error || "Login gagal");
+        return;
+      }
 
-    const data = await res.json();
-    if (res.ok) {
-      alert("Login berhasil");
-      // bisa navigate('/dashboard') di sini
-    } else {
-      alert(data.error || "Login gagal");
+      const data = await res.json();
+
+      setUser(data.token, data.user.username, data.user.id);
+
+      console.log("Login berhasil:", {
+        token: data.token,
+        username: data.user.username,
+        userId: data.user.id
+      });
+
+      navigate("/");
+    } catch (err) {
+      console.error("Login error:", err);
+      alert("Gagal login: " + err.message);
     }
   };
 
   return (
-    <Card className="mt-40 mx-auto w-full max-w-sm bg-white p-6 rounded-xl shadow-md">
-      <CardHeader>
-        <CardTitle>Login to your account</CardTitle>
-        <CardDescription>
-          Enter your username to login to your account
-        </CardDescription>
-        <CardAction>
-          <Button variant="link" onClick={() => navigate("/signup")}>
-            Sign Up
-          </Button>
-        </CardAction>
-      </CardHeader>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <form
+        onSubmit={handleLogin}
+        className="bg-white p-8 rounded shadow-md w-full max-w-sm"
+      >
+        <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
 
-      <CardContent>
-        <form onSubmit={handleLogin}>
-          <div className="flex flex-col gap-6">
-            <div className="grid gap-2">
-              <Label htmlFor="username">Username</Label>
-              <Input
-                id="username"
-                type="text"
-                placeholder="yourusername"
-                required
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
+        <div className="mb-4">
+          <label htmlFor="username" className="block text-sm font-semibold mb-1">
+            Username
+          </label>
+          <input
+            id="username"
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+            className="w-full border px-3 py-2 rounded"
+          />
+        </div>
+
+        <div className="mb-6">
+          <label htmlFor="password" className="block text-sm font-semibold mb-1">
+            Password
+          </label>
+          <div className="relative">
+            <input
+              id="password"
+              type={showPassword ? 'text' : 'password'}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="w-full border px-3 py-2 rounded"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute inset-y-0 right-0 px-3 flex items-center text-sm text-gray-600"
+            >
+              {showPassword ? 'Sembunyikan' : 'Lihat'}
+            </button>
           </div>
+        </div>
 
-          <CardFooter className="flex-col gap-2 mt-6">
-            <Button type="submit" className="w-full">
-              Login
-            </Button>
-            <Button variant="outline" className="w-full" disabled>
-              Login with Google
-            </Button>
-          </CardFooter>
-        </form>
-      </CardContent>
-    </Card>
+        <button
+          type="submit"
+          className="w-full bg-blue-600 text-white font-semibold py-2 rounded hover:bg-blue-700"
+        >
+          Login
+        </button>
+
+        <p className="text-center mt-4 text-sm text-gray-700">
+          Belum punya akun?{' '}
+          <Link to="/signup" className="text-blue-600 hover:underline font-medium">
+            Daftar sekarang
+          </Link>
+        </p>
+      </form>
+    </div>
   );
-}
+};
 
 export default Login;

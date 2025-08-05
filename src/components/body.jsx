@@ -1,5 +1,5 @@
 
-import FeaturedProducts from'./FeaturedProducts'
+import KidProduct from'./ProductList'
 const Body= () => {
     return (
     <>
@@ -21,7 +21,7 @@ const Body= () => {
         </div>
     </section>
 
-    <FeaturedProducts />
+    <KidProduct />
     </>
     );
 };
