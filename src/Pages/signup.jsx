@@ -1,92 +1,90 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-
-function Signup() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+const Signup = () => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleSignup = async (e) => {
     e.preventDefault();
 
-    const res = await fetch("http://localhost:5000/signup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
-    });
+    try {
+      const res = await fetch('http://localhost:5000/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
 
-    const data = await res.json();
-    if (res.ok) {
-      alert("Signup berhasil, silakan login");
-      navigate("/");
-    } else {
-      alert(data.error || "Signup gagal");
+      const data = await res.json();
+
+      if (res.ok) {
+        alert('Pendaftaran berhasil!');
+        navigate('/login');
+      } else {
+        alert(data.message || 'Gagal daftar.');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Terjadi kesalahan saat mendaftar.');
     }
   };
 
   return (
-    <Card className="mt-40 mx-auto w-full max-w-sm bg-white p-6 rounded-xl shadow-md">
-      <CardHeader>
-        <CardTitle>Create your account</CardTitle>
-        <CardDescription>Sign up with a username and password</CardDescription>
-        <CardAction>
-          <Button variant="link" onClick={() => navigate("/login")}>
-            Already have an account?
-          </Button>
-        </CardAction>
-      </CardHeader>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <form
+        onSubmit={handleSignup}
+        className="bg-white p-8 rounded shadow-md w-full max-w-sm"
+      >
+        <h2 className="text-2xl font-bold mb-6 text-center">Signup</h2>
 
-      <CardContent>
-        <form onSubmit={handleSignup}>
-          <div className="flex flex-col gap-6">
-            <div className="grid gap-2">
-              <Label htmlFor="username">Username</Label>
-              <Input
-                id="username"
-                type="text"
-                placeholder="yourusername"
-                required
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
+        <div className="mb-4">
+          <label htmlFor="username" className="block text-sm font-semibold mb-1">
+            Username
+          </label>
+          <input
+            id="username"
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+            className="w-full border px-3 py-2 rounded"
+          />
+        </div>
+
+        <div className="mb-6">
+          <label htmlFor="password" className="block text-sm font-semibold mb-1">
+            Password
+          </label>
+          <div className="relative">
+            <input
+              id="password"
+              type={showPassword ? 'text' : 'password'}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="w-full border px-3 py-2 rounded"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute inset-y-0 right-0 px-3 flex items-center text-sm text-gray-600"
+            >
+              {showPassword ? 'Sembunyikan' : 'Lihat'}
+            </button>
           </div>
+        </div>
 
-          <CardFooter className="flex-col gap-2 mt-6">
-            <Button type="submit" className="w-full">
-              Sign Up
-            </Button>
-            <Button variant="outline" className="w-full" disabled>
-              Sign up with Google
-            </Button>
-          </CardFooter>
-        </form>
-      </CardContent>
-    </Card>
+        <button
+          type="submit"
+          className="w-full bg-green-600 text-white font-semibold py-2 rounded hover:bg-green-700"
+        >
+          Daftar
+        </button>
+      </form>
+    </div>
   );
-}
+};
 
 export default Signup;
