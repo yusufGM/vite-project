@@ -1,6 +1,14 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import useUserStore from './useUserStore';
+import { useLocation } from 'react-router-dom';
+
+let locationGetter; 
+
+
+export const usePathListener = () => {
+  const location = useLocation();
+  locationGetter = location.pathname;
+};
 
 const useCartStore = create(
   persist(
@@ -8,17 +16,18 @@ const useCartStore = create(
       isOpen: false,
       cart: [],
 
-      openDrawer: () => set({ isOpen: true }),
+      openDrawer: () =>
+        set((state) => {
+          if (locationGetter === '/login') {
+            return state; 
+          }
+          return { isOpen: true };
+        }),
+
       closeDrawer: () => set({ isOpen: false }),
 
       addToCart: (product) =>
         set((state) => {
-          const { token } = useUserStore.getState();
-          if (!token) {
-            alert("Harus login untuk menambahkan ke keranjang.");
-            return state;
-          }
-
           const existing = state.cart.find(p => p._id === product._id);
           const updatedCart = existing
             ? state.cart.map(p =>
@@ -29,7 +38,6 @@ const useCartStore = create(
           return { cart: updatedCart };
         }),
 
-      // Update quantity
       updateQty: (index, qty) =>
         set((state) => {
           const newCart = [...state.cart];
@@ -41,7 +49,6 @@ const useCartStore = create(
           return { cart: newCart };
         }),
 
-      // Remove item by index
       removeItem: (index) =>
         set((state) => {
           const newCart = [...state.cart];
@@ -49,17 +56,15 @@ const useCartStore = create(
           return { cart: newCart };
         }),
 
-      // Optional: remove item by ID
       removeFromCart: (id) =>
         set((state) => ({
           cart: state.cart.filter(item => item._id !== id),
         })),
 
-      // Clear all
       clearCart: () => set({ cart: [] }),
     }),
     {
-      name: 'cart-storage', // ✅ simpan ke localStorage
+      name: 'cart-storage',
     }
   )
 );

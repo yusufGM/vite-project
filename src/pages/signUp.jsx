@@ -1,53 +1,44 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import useUserStore from '../components/store/useUserStore';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
-const Login = () => {
+const SignUp = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const { setUser } = useUserStore();
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
+
     try {
-      const res = await fetch("http://localhost:5000/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch('http://localhost:5000/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
       });
 
-      if (!res.ok) {
-        const err = await res.json();
-        alert(err.error || "Login gagal");
-        return;
-      }
-
       const data = await res.json();
 
-      setUser(data.token, data.user.username, data.user.id);
-
-      console.log("Login berhasil:", {
-        token: data.token,
-        username: data.user.username,
-        userId: data.user.id
-      });
-
-      navigate("/");
+      if (res.ok) {
+        toast.success('Pendaftaran berhasil!');
+        navigate('/login');
+      } else {
+        toast.error(data.error || 'Gagal daftar.');
+      }
     } catch (err) {
-      console.error("Login error:", err);
-      alert("Gagal login: " + err.message);
+      console.error(err);
+      toast.error('Terjadi kesalahan saat mendaftar.');
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <form
-        onSubmit={handleLogin}
+        onSubmit={handleSignup}
         className="bg-white p-8 rounded shadow-md w-full max-w-sm"
       >
-        <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
+        <h2 className="text-2xl font-bold mb-6 text-center">Signup</h2>
 
         <div className="mb-4">
           <label htmlFor="username" className="block text-sm font-semibold mb-1">
@@ -88,20 +79,13 @@ const Login = () => {
 
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white font-semibold py-2 rounded hover:bg-blue-700"
+          className="w-full bg-green-600 text-white font-semibold py-2 rounded hover:bg-green-700"
         >
-          Login
+          Daftar
         </button>
-
-        <p className="text-center mt-4 text-sm text-gray-700">
-          Belum punya akun?{' '}
-          <Link to="/signup" className="text-blue-600 hover:underline font-medium">
-            Daftar sekarang
-          </Link>
-        </p>
       </form>
     </div>
   );
 };
 
-export default Login;
+export default SignUp;
