@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import useCartStore from "./store/useCartStore";
 import useUserStore from "./store/useUserStore";
+import { toast } from "sonner"; 
 
 function CartDrawer() {
   const drawerRef = useRef();
@@ -27,7 +28,7 @@ function CartDrawer() {
     e.preventDefault();
 
     if (!token) {
-      alert("Silakan login terlebih dahulu.");
+      toast.error("Silakan login terlebih dahulu.");
       navigate("/login");
       return;
     }

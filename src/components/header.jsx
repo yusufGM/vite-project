@@ -25,21 +25,13 @@ const Header = () => {
             />
           </svg>
         </Link>
-
-        {token && (
-          <div className="hidden md:flex space-x-10 font-semibold text-sm text-gray-900 tracking-wide uppercase">
-            <Link to="/" className="hover:text-red-600">New & Featured</Link>
-            <Link to="/menpage" className="hover:text-red-600">Men</Link>
-            <Link to="/womenpage" className="hover:text-red-600">Women</Link>
-            <Link to="/kidspage" className="hover:text-red-600">Kids</Link>
+        <div className="hidden md:flex space-x-10 font-semibold text-sm text-gray-900 tracking-wide uppercase">
+            <Link to="/storepage" className="hover:text-red-600">Store</Link>
             <Link to="/salepage" className="hover:text-red-600">Sale</Link>
-            <Link to="/snkrspage" className="hover:text-red-600">SNKRS</Link>
-          </div>
-        )}
-
+        </div>
         <div className="flex space-x-6 items-center text-gray-700">
-          {token && (
-            <button onClick={openDrawer} aria-label="Cart" className="hover:text-red-600 relative">
+          
+            <button onClick={openDrawer} aria-label="Cart" className="hover:text-red-600 transition duration-200 ease-in-out relative cursor-pointer">
               <svg className="h-6 w-6 stroke-current" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path d="M3 3h2l.4 2M7 13h10l4-8H5.4" />
                 <circle cx="7" cy="21" r="1" />
@@ -51,7 +43,6 @@ const Header = () => {
                 </span>
               )}
             </button>
-          )}
 
           {token ? (
             <div className="flex items-center gap-3">

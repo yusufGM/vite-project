@@ -1,9 +1,8 @@
-// src/Pages/checkout.jsx
 import { useState } from 'react';
 import useCartStore from '../components/store/useCartStore';
 import useUserStore from '../components/store/useUserStore';
 
-const Checkout = () => {
+const CheckoutPage = () => {
   const { cart, clearCart } = useCartStore();
   const { token } = useUserStore();
   const [address, setAddress] = useState('');
@@ -83,4 +82,4 @@ const Checkout = () => {
   );
 };
 
-export default Checkout;
+export default CheckoutPage;
