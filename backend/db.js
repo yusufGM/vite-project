@@ -3,23 +3,16 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const options = {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
+const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log('✅ MongoDB Atlas connected');
+  } catch (err) {
+    console.error('❌ MongoDB Atlas connection error:', err.message);
+    process.exit(1);
+  }
 };
 
-if (process.env.APPUSER && process.env.APPPASS) {
-  options.user = process.env.APPUSER;
-  options.pass = process.env.APPPASS;
-}
-
-mongoose.connect(process.env.MONGO_URI, options)
-  .then(() => {
-    console.log('✅ MongoDB connected');
-  })
-  .catch((err) => {
-    console.warn('⚠️ MongoDB connection failed, fallback to JSON data');
-    console.error(err);
-  });
+connectDB();
 
 export default mongoose;

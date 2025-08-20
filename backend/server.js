@@ -47,7 +47,7 @@ const adminOnly = (req, res, next) => {
     const authHeader = req.headers.authorization;
     if (!authHeader) return res.status(401).json({ error: 'No token provided' });
 
-    const token = authHeader.split(' ');
+    const token = authHeader.split(' ')[1]; // ambil token setelah "Bearer"
     jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
       if (err || decoded.role !== 'admin') {
         console.error("Admin Verify Error:", err || "Not admin role");
@@ -61,6 +61,7 @@ const adminOnly = (req, res, next) => {
     res.status(500).json({ error: 'Middleware error', detail: err.message });
   }
 };
+
 
 
 app.get('/test', (req, res) => {

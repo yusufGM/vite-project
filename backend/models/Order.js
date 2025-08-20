@@ -4,14 +4,14 @@ const orderSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   items: [
     {
-      _id: String,
+      productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Item' },
       name: String,
       price: Number,
       imgSrc: String,
       qty: Number,
     },
   ],
-  createdAt: { type: Date, default: Date.now },
-});
+}, { timestamps: true });
+
 
 export default mongoose.model('Order', orderSchema);
