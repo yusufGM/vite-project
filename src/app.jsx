@@ -9,7 +9,6 @@ import ScrollToTop from "./components/ui/ScrollToTop.jsx";
 import { Toaster } from "sonner";
 import ProductDetail from "./pages/productDetail.jsx";
 
-// Lazy load pages
 const HomePage = lazy(() => import("./pages/homePage.jsx"));
 const LoginPage = lazy(() => import("./pages/loginPage.jsx"));
 const SignUp = lazy(() => import("./pages/signUp.jsx"));
@@ -18,13 +17,11 @@ const StorePage = lazy(() => import("./pages/storePage.jsx"));
 const SalePage = lazy(() => import("./pages/salePage.jsx"));
 const AdminDashboard = lazy(() => import("./pages/adminDashboard.jsx"));
 
-// Protect route for logged-in user
 function PrivateRoute({ children }) {
   const { token } = useUserStore();
   return token ? children : <Navigate to="/login" />;
 }
 
-// Protect route for admin
 function AdminRoute({ children }) {
   const { token, username } = useUserStore();
   const isAdmin = username === "admin";
@@ -37,7 +34,6 @@ function App() {
   const location = useLocation();
   const closeDrawer = useCartStore((state) => state.closeDrawer);
 
-  // Tutup cart setiap pindah halaman
   useEffect(() => {
     closeDrawer();
   }, [location.pathname, closeDrawer]);
@@ -61,7 +57,7 @@ function App() {
               </PrivateRoute>
             }
           />
-          <Route path="/storepage" element={<StorePage />} />   {/* ✅ route lowercase */}
+          <Route path="/storepage" element={<StorePage />} />  
           <Route path="/sale" element={<SalePage />} />
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route

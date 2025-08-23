@@ -1,12 +1,12 @@
-// src/components/store/filterStore.js
+
 import { create } from "zustand";
 
 export const useFilterStore = create((set) => ({
   filters: {
     sale: false,
-    gender: "all", // "all" | "male" | "female" | "unisex"
-    ageGroup: "all", // "all" | "adult" | "child"
-    price: "none", // "none" | "low-high" | "high-low"
+    gender: "all", 
+    ageGroup: "all", 
+    price: "none", 
   },
   setFilter: (key, value) =>
     set((state) => ({

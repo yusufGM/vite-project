@@ -101,8 +101,8 @@ app.get('/items/:id', async (req, res) => {
 
 app.post('/items', adminOnly, async (req, res) => {
   try {
-    const { name, imgSrc, price, description, category } = req.body;
-    const item = new Item({ name, imgSrc, price, description, category });
+    const { name, imgSrc, price, description, category, isNew, gender, ageGroup } = req.body;
+    const item = new Item({ name, imgSrc, price, description, category, isNew, gender, ageGroup });
     await item.save();
     res.status(201).json({ message: 'Produk berhasil ditambahkan', item });
   } catch (err) {

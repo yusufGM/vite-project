@@ -1,4 +1,4 @@
-// src/pages/StorePage.jsx
+
 import { useState, useEffect } from "react";
 import ProductList from "../components/productList";
 import { useFilterStore } from "../components/store/filterStore"; // ✅ Zustand
@@ -10,7 +10,6 @@ function StorePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // 🔹 Ambil produk dari backend
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -30,35 +29,28 @@ function StorePage() {
     fetchProducts();
   }, []);
 
-  // 🔹 Ambil kategori unik
   const categories = ["All", ...new Set(products.map((p) => p.category))];
 
-  // 🔹 Filter kategori
   let filteredProducts =
     selectedCategory === "All"
       ? products
       : products.filter((p) => p.category === selectedCategory);
 
-  // 🔹 Filter sale
   if (filters.sale) {
     filteredProducts = filteredProducts.filter((p) => p.price < 3000000);
   }
 
-  // 🔹 Filter gender
   if (filters.gender !== "all") {
     filteredProducts = filteredProducts.filter((p) =>
       p.gender?.toLowerCase() === filters.gender
     );
   }
 
-  // 🔹 Filter age group
   if (filters.ageGroup !== "all") {
     filteredProducts = filteredProducts.filter((p) =>
       p.ageGroup?.toLowerCase() === filters.ageGroup
     );
   }
-
-  // 🔹 Urutkan harga
   if (filters.price === "low-high") {
     filteredProducts = [...filteredProducts].sort((a, b) => a.price - b.price);
   } else if (filters.price === "high-low") {
@@ -67,7 +59,7 @@ function StorePage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+
       <header className="bg-white shadow-sm sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
           <h1 className="text-2xl font-bold text-gray-800">
@@ -78,11 +70,11 @@ function StorePage() {
       </header>
 
       <div className="container mx-auto px-4 py-6 flex gap-6">
-        {/* Sidebar scrollable */}
+      
         <aside className="hidden md:block w-64 flex-shrink-0">
           <div className="sticky top-20">
             <div className="bg-white rounded-lg shadow p-4 max-h-[80vh] overflow-y-auto space-y-6">
-              {/* Categories */}
+        
               <div>
                 <h2 className="font-semibold text-lg mb-3">Categories</h2>
                 <ul className="space-y-2">
@@ -103,11 +95,10 @@ function StorePage() {
                 </ul>
               </div>
 
-              {/* Filters */}
               <div>
                 <h2 className="font-semibold text-lg mb-3">Filters</h2>
                 <div className="space-y-4">
-                  {/* Gender */}
+           
                   <div>
                     <label className="block font-medium mb-1">Gender</label>
                     <select
@@ -122,7 +113,6 @@ function StorePage() {
                     </select>
                   </div>
 
-                  {/* Age Group */}
                   <div>
                     <label className="block font-medium mb-1">Age Group</label>
                     <select
@@ -136,7 +126,7 @@ function StorePage() {
                     </select>
                   </div>
 
-                  {/* Harga */}
+                  
                   <div>
                     <label className="block font-medium mb-1">Urutkan Harga</label>
                     <select
@@ -150,7 +140,6 @@ function StorePage() {
                     </select>
                   </div>
 
-                  {/* Sale */}
                   <div className="flex items-center justify-between">
                     <span>Sale & Offers</span>
                     <label className="relative inline-flex items-center cursor-pointer">
@@ -175,7 +164,7 @@ function StorePage() {
           </div>
         </aside>
 
-        {/* Produk */}
+       
         <main className="flex-1">
           {loading ? (
             <p className="text-center py-10">Loading products...</p>

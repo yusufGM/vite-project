@@ -27,8 +27,6 @@ const Body = () => {
           </div>
         </div>
       </section>
-
-      {/* Tampilkan kategori tertentu, max 6 produk */}
       <ProductCart category="Casual Shoes" limit={6} />
       <ProductCart category="Boots" limit={6} />
       <ProductCart category="Minimalist Shoes" limit={6} />
