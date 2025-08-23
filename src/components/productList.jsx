@@ -1,58 +1,75 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import useCartStore from './store/useCartStore';
-import useUserStore from './store/useUserStore';
+import useCartStore from "./store/useCartStore";
+import { Link } from "react-router-dom";
 
-const ProductList = () => {
+const ProductList = ({ products }) => {
   const { addToCart, openDrawer } = useCartStore();
- 
-  const [items, setItems] = useState([]);
- 
-
-  useEffect(() => {
-    fetch("http://localhost:5000/items")
-      .then(res => res.json())
-      .then(data => setItems(data))
-      .catch(err => console.error(err));
-  }, []);
 
   const handleAddToCart = (item) => {
     addToCart({
       _id: item._id,
-      name: item.title,
+      name: item.name,
       price: item.price,
-      imgSrc: item.image,
+      imgSrc: item.imgSrc,
     });
     openDrawer();
   };
 
-  return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 lg:px-20 xl:px-24 py-16 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
-    {items.map(item => (
-      <div key={item._id} className="p-6 border rounded-lg shadow-md flex flex-col">
-        <img
-          src={item.image}
-          alt={item.title}
-          className="w-full h-48 object-cover rounded-md mb-4"
-        />
-        <h2 className="text-lg font-semibold mb-2">{item.title}</h2>
-        <p className="text-gray-700 flex-grow">{item.description}</p>
-        <p className="text-green-600 font-bold mt-4">
-          Rp{item.price.toLocaleString('id-ID')}
-        </p>
-
-    
-          <button
-            onClick={() => handleAddToCart(item)}
-            className="bg-gray-900 text-white mt-6 py-3 rounded-xl w-full hover:bg-gray-800 transition"
-          >
-            Add To Cart
-          </button>
-        
+  if (!products || products.length === 0) {
+    return (
+      <div className="w-full text-center py-8">
+        <p className="text-gray-500">No products found in this category.</p>
       </div>
-    ))}
-  </div>
+    );
+  }
 
+  return (
+    <div className="w-full max-w-7xl mx-auto">
+      {/* Products Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
+        {products.map((product) => (
+          <div
+            key={product._id}
+            className="flex flex-col shadow-md rounded-2xl overflow-hidden h-full bg-white"
+          >
+            <div className="flex flex-col p-4 h-full border rounded-lg shadow hover:shadow-lg transition-shadow">
+              <Link to={`/product/${product._id}`}>
+                <div className="h-48 bg-gray-200 flex items-center justify-center overflow-hidden rounded-xl mb-4">
+                  {product.imgSrc ? (
+                    <img
+                      src={product.imgSrc}
+                      alt={product.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-gray-500">No Image</span>
+                  )}
+                </div>
+                <h2 className="text-lg font-semibold mb-2">
+                  {product.name}
+                </h2>
+                <p className="text-gray-600 text-sm mb-2">
+                  {product.description}
+                </p>
+              </Link>
+
+              <div className="mt-auto flex justify-between items-center">
+                {product.isNew && (
+                  <span className="inline-block bg-black text-white text-xs px-2 py-1 rounded">
+                    Just In
+                  </span>
+                )}
+                <button
+                  onClick={() => handleAddToCart(product)}
+                  className="inline-block bg-black text-white rounded-3xl hover:bg-gray-800 transition px-6 py-2 uppercase font-semibold tracking-wider cursor-pointer text-center ml-auto"
+                >
+                  Rp{product.price.toLocaleString("id-ID")}
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 };
 

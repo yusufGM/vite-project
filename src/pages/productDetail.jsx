@@ -41,11 +41,10 @@ function ProductDetail() {
 
   const handleAddToCart = () => {
     addToCart({
-      id: product._id,
-      title: product.title,
+      _id: product._id,
+      name: product.name,
       price: product.price,
-      image: product.image,
-      quantity: 1,
+      imgSrc: product.imgSrc,
     });
     toast.success("Produk ditambahkan ke keranjang!");
   };
@@ -56,15 +55,15 @@ function ProductDetail() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div>
           <img
-            src={product.image}
-            alt={product.title}
+            src={product.imgSrc}
+            alt={product.name}
             className="w-full rounded-lg shadow-lg"
           />
         </div>
         <div>
-          <h1 className="text-3xl font-bold">{product.title}</h1>
+          <h1 className="text-3xl font-bold">{product.name}</h1>
           <p className="mt-4 text-gray-600">{product.description}</p>
-          <p className="mt-6 text-2xl font-semibold">{product.price} IDR</p>
+          <p className="mt-6 text-2xl font-semibold">Rp{product.price.toLocaleString("id-ID")}</p>
           <button
             onClick={handleAddToCart}
             className="mt-6 bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition"
@@ -82,13 +81,13 @@ function ProductDetail() {
                 className="flex items-center space-x-4 border rounded-lg p-3 hover:shadow-lg transition"
               >
                 <img
-                  src={item.image}
-                  alt={item.title}
+                  src={item.imgSrc}
+                  alt={item.name}
                   className="w-16 h-16 object-cover rounded"
                 />
                 <div>
-                  <h3 className="font-semibold">{item.title}</h3>
-                  <p className="text-gray-600">{item.price} IDR</p>
+                  <h3 className="font-semibold">{item.name}</h3>
+                  <p className="text-gray-600">Rp{item.price.toLocaleString("id-ID")}</p>
                 </div>
               </Link>
             ))}
