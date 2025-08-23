@@ -1,5 +1,6 @@
 import ProductCart from './productCart';
 import { Link } from 'react-router-dom';
+
 const Body = () => {
   return (
     <>
@@ -19,14 +20,19 @@ const Body = () => {
               <p className="text-xl md:text-2xl font-light drop-shadow-lg">
                 Menapak Bersama. Gaya untuk setiap langkah, dari kasual hingga olahraga.
               </p>
-              <Link to="/storepage" className="inline-block bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-full px-8 py-3 uppercase font-semibold tracking-widest shadow-2xl hover:scale-105 transition-transform"> Mulai Menapak
+              <Link to="/storepage" className="inline-block bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-full px-8 py-3 uppercase font-semibold tracking-widest shadow-2xl hover:scale-105 transition-transform">
+                Mulai Menapak
               </Link>
             </div>
           </div>
         </div>
       </section>
 
-      <ProductCart />
+      {/* Tampilkan kategori tertentu, max 6 produk */}
+      <ProductCart category="Casual Shoes" limit={6} />
+      <ProductCart category="Boots" limit={6} />
+      <ProductCart category="Minimalist Shoes" limit={6} />
+      <ProductCart category="High Heels" limit={6} />
     </>
   );
 };

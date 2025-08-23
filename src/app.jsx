@@ -1,30 +1,33 @@
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { Suspense, lazy, useEffect } from 'react';
-import Header from './components/header';
-import Footer from './components/footer';
-import CartDrawer from './components/CartDrawer';
-import useUserStore from './components/store/useUserStore';
-import useCartStore from './components/store/useCartStore';
-import ScrollToTop from './components/ui/ScrollToTop';
-import { usePathListener } from './components/store/useCartStore';
-import { Toaster } from 'sonner';
-import ProductDetail from "./pages/ProductDetail";
-const HomePage = lazy(() => import('./pages/homePage'));
-const LoginPage = lazy(() => import('./pages/loginPage'));
-const SignUp = lazy(() => import('./pages/signUp'));
-const CheckoutPage = lazy(() => import('./pages/checkoutPage'));
-const StorePage = lazy(() => import('./pages/storePage'));
-const SalePage = lazy(() => import('./pages/salePage'));
-const AdminDashboard = lazy(() => import('./pages/adminDashboard'));
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { Suspense, lazy, useEffect } from "react";
+import Header from "./components/header.jsx";
+import Footer from "./components/footer.jsx";
+import CartDrawer from "./components/CartDrawer.jsx";
+import useUserStore from "./components/store/useUserStore.js";
+import useCartStore, { usePathListener } from "./components/store/useCartStore.js";
+import ScrollToTop from "./components/ui/ScrollToTop.jsx";
+import { Toaster } from "sonner";
+import ProductDetail from "./pages/productDetail.jsx";
 
+// Lazy load pages
+const HomePage = lazy(() => import("./pages/homePage.jsx"));
+const LoginPage = lazy(() => import("./pages/loginPage.jsx"));
+const SignUp = lazy(() => import("./pages/signUp.jsx"));
+const CheckoutPage = lazy(() => import("./pages/checkoutPage.jsx"));
+const StorePage = lazy(() => import("./pages/storePage.jsx"));
+const SalePage = lazy(() => import("./pages/salePage.jsx"));
+const AdminDashboard = lazy(() => import("./pages/adminDashboard.jsx"));
+
+// Protect route for logged-in user
 function PrivateRoute({ children }) {
   const { token } = useUserStore();
   return token ? children : <Navigate to="/login" />;
 }
 
+// Protect route for admin
 function AdminRoute({ children }) {
   const { token, username } = useUserStore();
-  const isAdmin = username === 'admin';
+  const isAdmin = username === "admin";
   return token && isAdmin ? children : <Navigate to="/login" />;
 }
 
@@ -32,12 +35,12 @@ function App() {
   usePathListener();
 
   const location = useLocation();
-  const closeDrawer = useCartStore(state => state.closeDrawer);
+  const closeDrawer = useCartStore((state) => state.closeDrawer);
 
+  // Tutup cart setiap pindah halaman
   useEffect(() => {
-    closeDrawer(); 
+    closeDrawer();
   }, [location.pathname, closeDrawer]);
-
 
   return (
     <Suspense fallback={<div className="p-4 text-center">Loading...</div>}>
@@ -58,8 +61,8 @@ function App() {
               </PrivateRoute>
             }
           />
-          <Route path="/StorePage" element={<StorePage />} />
-          <Route path="/salepage" element={<SalePage />} />
+          <Route path="/storepage" element={<StorePage />} />   {/* ✅ route lowercase */}
+          <Route path="/sale" element={<SalePage />} />
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route
             path="/admin/dashboard"
@@ -71,6 +74,7 @@ function App() {
           />
         </Routes>
       </div>
+
       <Footer />
       <Toaster position="top-center" richColors closeButton />
     </Suspense>
