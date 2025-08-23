@@ -20,14 +20,14 @@ const ProductCart = ({ category, limit = 6 }) => {
       .then((data) => {
         let filtered = data;
 
-        // Jika ada kategori → filter
+       
         if (category) {
           filtered = filtered.filter(
             (item) => item.category?.toLowerCase() === category.toLowerCase()
           );
         }
 
-        // Batasi jumlah produk
+        
         setItems(filtered.slice(0, limit));
       })
       .catch((err) => console.error(err));
@@ -43,7 +43,7 @@ const ProductCart = ({ category, limit = 6 }) => {
     openDrawer();
   };
 
-  if (items.length === 0) return null; // jika tidak ada produk, jangan render
+  if (items.length === 0) return null; 
 
   return (
     <section className="py-16">
