@@ -174,6 +174,64 @@ app.get('/orders', adminOnly, async (req, res) => {
   }
 });
 
+app.post('/signup', async (req, res) => {
+  try {
+    const { username, password, role = 'user' } = req.body;
+
+    if (!username || !password) {
+      return res.status(400).json({ error: 'Username dan password harus diisi' });
+    }
+
+    const existingUser = await User.findOne({ username });
+    if (existingUser) {
+      return res.status(400).json({ error: 'Username sudah digunakan' });
+    }
+
+    const newUser = new User({ username, password, role });
+    await newUser.save();
+
+    return res.status(201).json({ message: 'User registered' });
+  } catch (err) {
+    console.error("POST /signup Error:", err);
+    res.status(500).json({ error: 'Server error', detail: err.message });
+  }
+});
+
+app.post('/login', async (req, res) => {
+  try {
+    const { username, password } = req.body;
+
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(401).json({ error: 'User not found' });
+    }
+
+    const match = await user.comparePassword(password);
+    if (!match) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET
+    );
+
+    res.json({
+      message: 'Login successful',
+      token,
+      user: {
+        id: user._id,
+        username: user.username,
+        role: user.role,
+      },
+    });
+  } catch (err) {
+    console.error("POST /login Error:", err);
+    res.status(500).json({ error: 'Server error', detail: err.message });
+  }
+});
+
+
 app.post("/checkout", authMiddleware, async (req, res) => {
   try {
     const { address, whatsapp, items } = req.body;

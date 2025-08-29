@@ -84,6 +84,10 @@ function ProductDetail() {
                   src={item.imgSrc}
                   alt={item.name}
                   className="w-16 h-16 object-cover rounded"
+                  onError={(e) => {
+                      e.target.onerror = null; 
+                      e.target.src = '/path/to/fallback-image.png'; 
+                    }}
                 />
                 <div>
                   <h3 className="font-semibold">{item.name}</h3>
