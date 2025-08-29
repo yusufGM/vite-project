@@ -66,6 +66,10 @@ const ProductCart = ({ category, limit = 6 }) => {
                           src={item.imgSrc}
                           alt={item.name}
                           className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
+                          onError={(e) => {
+                          e.target.onerror = null; 
+                          e.target.src = '/path/to/fallback-image.png'; 
+                           }}
                         />
                       </div>
                       <div className="absolute bottom-0 left-0 right-0  text-white py-3 text-center">

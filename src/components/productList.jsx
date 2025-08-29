@@ -37,6 +37,10 @@ const ProductList = ({ products }) => {
                     src={product.imgSrc}
                     alt={product.name}
                     className="w-full h-full object-contain bg-white"
+                    onError={(e) => {
+                      e.target.onerror = null; 
+                      e.target.src = '/path/to/fallback-image.png'; 
+                    }}
                   />
                 ) : (
                   <span className="text-gray-500 flex items-center justify-center h-full">
