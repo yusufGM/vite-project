@@ -9,6 +9,7 @@ import ScrollToTop from "./components/ui/ScrollToTop.jsx";
 import { Toaster } from "sonner";
 import ProductDetail from "./pages/productDetail.jsx";
 
+const SuccessPage = lazy(() => import("./pages/successPage.jsx"));
 const HomePage = lazy(() => import("./pages/homePage.jsx"));
 const LoginPage = lazy(() => import("./pages/loginPage.jsx"));
 const SignUp = lazy(() => import("./pages/signUp.jsx"));
@@ -57,6 +58,8 @@ function App() {
               </PrivateRoute>
             }
           />
+          <Route path="/success" element={
+            <SuccessPage />} />
           <Route path="/storepage" element={<StorePage />} />  
           <Route path="/sale" element={<SalePage />} />
           <Route path="/product/:id" element={<ProductDetail />} />

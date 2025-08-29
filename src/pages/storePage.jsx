@@ -58,9 +58,9 @@ function StorePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 left-0 right-0 pt-2">
 
-      <header className="bg-white shadow-sm sticky top-0 z-40">
+      <header className="bg-white shadow-sm sticky top-0 z-40 ">
         <div className="container mx-auto px-4 py-4">
           <h1 className="text-2xl font-bold text-gray-800">
             Store{" "}

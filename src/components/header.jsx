@@ -47,6 +47,7 @@ const Header = () => {
           {token ? (
             <div className="flex items-center gap-3">
               <span className="text-sm text-gray-700">Hi, {username}</span>
+
               <button
                 onClick={handleLogout}
                 className="text-red-500 hover:text-red-700 text-sm"
