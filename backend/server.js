@@ -15,24 +15,24 @@ mongoose
   .catch((err) => console.error("❌ MongoDB connection error:", err));
 
 const userSchema = new mongoose.Schema({
-  username: String,
-  email: String,
-  password: String,
-  role: { type: String, default: "user" },
-});
+  username: { type: String, required: true, unique: true },
+  email: { type: String, unique: true, sparse: true },
+  password: { type: String, required: true },
+  role: { type: String, enum: ["user", "admin"], default: "user" },
+}, { timestamps: true });
 
-userSchema.pre("save", async function (next) {
-  if (this.isModified("password")) {
-    this.password = await bcrypt.hash(this.password, 10);
-  }
+userSchema.pre("save", async function(next) {
+  if (!this.isModified("password")) return next();
+  this.password = await bcrypt.hash(this.password, 10);
   next();
 });
 
-userSchema.methods.comparePassword = async function (password) {
-  return await bcrypt.compare(password, this.password);
+userSchema.methods.comparePassword = function(password) {
+  return bcrypt.compare(password, this.password);
 };
 
 const User = mongoose.model("User", userSchema);
+
 
 const itemSchema = new mongoose.Schema({
   name: String,
@@ -176,21 +176,13 @@ app.get('/orders', adminOnly, async (req, res) => {
 
 app.post('/signup', async (req, res) => {
   try {
-    const { username, password, role = 'user' } = req.body;
-
-    if (!username || !password) {
-      return res.status(400).json({ error: 'Username dan password harus diisi' });
-    }
-
-    const existingUser = await User.findOne({ username });
-    if (existingUser) {
-      return res.status(400).json({ error: 'Username sudah digunakan' });
-    }
-
-    const newUser = new User({ username, password, role });
+    const { username, email, password, role = 'user' } = req.body;
+    if (!username || !password) return res.status(400).json({ error: 'Username dan password harus diisi' });
+    const existingUser = await User.findOne({ $or: [{ username }, { email }] });
+    if (existingUser) return res.status(400).json({ error: 'Username atau email sudah digunakan' });
+    const newUser = new User({ username, email, password, role });
     await newUser.save();
-
-    return res.status(201).json({ message: 'User registered' });
+    res.status(201).json({ message: 'User registered' });
   } catch (err) {
     console.error("POST /signup Error:", err);
     res.status(500).json({ error: 'Server error', detail: err.message });
@@ -199,32 +191,14 @@ app.post('/signup', async (req, res) => {
 
 app.post('/login', async (req, res) => {
   try {
-    const { username, password } = req.body;
-
-    const user = await User.findOne({ username });
-    if (!user) {
-      return res.status(401).json({ error: 'User not found' });
-    }
-
+    const { identifier, password } = req.body;
+    if (!identifier || !password) return res.status(400).json({ error: 'Username/email dan password harus diisi' });
+    const user = await User.findOne({ $or: [{ username: identifier }, { email: identifier }] });
+    if (!user) return res.status(401).json({ error: 'User tidak ditemukan' });
     const match = await user.comparePassword(password);
-    if (!match) {
-      return res.status(401).json({ error: 'Invalid credentials' });
-    }
-
-    const token = jwt.sign(
-      { id: user._id, role: user.role },
-      process.env.JWT_SECRET
-    );
-
-    res.json({
-      message: 'Login successful',
-      token,
-      user: {
-        id: user._id,
-        username: user.username,
-        role: user.role,
-      },
-    });
+    if (!match) return res.status(401).json({ error: 'Password salah' });
+    const token = jwt.sign({ id: user._id, username: user.username, role: user.role }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    res.json({ message: 'Login successful', token, user: { id: user._id, username: user.username, email: user.email, role: user.role } });
   } catch (err) {
     console.error("POST /login Error:", err);
     res.status(500).json({ error: 'Server error', detail: err.message });
