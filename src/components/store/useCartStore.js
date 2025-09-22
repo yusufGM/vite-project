@@ -12,60 +12,32 @@ export const usePathListener = () => {
 
 const useCartStore = create(
   persist(
-    (set) => ({
+    (set, get) => ({
       isOpen: false,
       cart: [],
 
-      openDrawer: () =>
-        set((state) => {
-          if (locationGetter === '/login') {
-            return state; 
-          }
-          return { isOpen: true };
-        }),
-
+      openDrawer: () => set((state) => (locationGetter === '/login' ? state : { isOpen: true })),
       closeDrawer: () => set({ isOpen: false }),
 
-      addToCart: (product) =>
-        set((state) => {
-          const existing = state.cart.find(p => p._id === product._id);
-          const updatedCart = existing
-            ? state.cart.map(p =>
-                p._id === product._id ? { ...p, qty: p.qty + 1 } : p
-              )
-            : [...state.cart, { ...product, qty: 1 }];
+      addToCart: (product) => set((state) => {
+        const existing = state.cart.find((p) => p._id === product._id);
+        const updated = existing
+          ? state.cart.map((p) => (p._id === product._id ? { ...p, qty: (p.qty || 0) + 1 } : p))
+          : [...state.cart, { ...product, qty: 1 }];
+        return { cart: updated };
+      }),
 
-          return { cart: updatedCart };
-        }),
+      updateQty: (index, qty) => set((state) => {
+        const arr = [...state.cart];
+        if (qty <= 0) arr.splice(index, 1); else arr[index].qty = qty;
+        return { cart: arr };
+      }),
 
-      updateQty: (index, qty) =>
-        set((state) => {
-          const newCart = [...state.cart];
-          if (qty <= 0) {
-            newCart.splice(index, 1);
-          } else {
-            newCart[index].qty = qty;
-          }
-          return { cart: newCart };
-        }),
-
-      removeItem: (index) =>
-        set((state) => {
-          const newCart = [...state.cart];
-          newCart.splice(index, 1);
-          return { cart: newCart };
-        }),
-
-      removeFromCart: (id) =>
-        set((state) => ({
-          cart: state.cart.filter(item => item._id !== id),
-        })),
-
+      removeItem: (index) => set((state) => { const arr = [...state.cart]; arr.splice(index, 1); return { cart: arr }; }),
+      removeFromCart: (id) => set((state) => ({ cart: state.cart.filter((i) => i._id !== id) })),
       clearCart: () => set({ cart: [] }),
     }),
-    {
-      name: 'cart-storage',
-    }
+    { name: 'cart-storage' }
   )
 );
 

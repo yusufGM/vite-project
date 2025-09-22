@@ -1,17 +1,14 @@
-import { useEffect, useState } from "react";
-import useCartStore from "./store/useCartStore";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import useCartStore from "../components/store/useCartStore";
 
-const ProductCart = ({ category, limit = 6 }) => {
+const ProductCart = ({ category, limit = 12 }) => {
   const { addToCart, openDrawer } = useCartStore();
   const [items, setItems] = useState([]);
+  const [dragging, setDragging] = useState(false);
+  const rowRef = useRef(null);
+  const startX = useRef(0);
+  const scrollStart = useRef(0);
 
   useEffect(() => {
     fetch("http://localhost:5000/items")
@@ -38,68 +35,84 @@ const ProductCart = ({ category, limit = 6 }) => {
     openDrawer();
   };
 
-  if (items.length === 0) return null;
+  const scrollByCard = (dir = 1) => {
+    const el = rowRef.current;
+    if (!el) return;
+    const step = Math.min(el.clientWidth * 0.8, 900);
+    el.scrollBy({ left: dir * step, behavior: "smooth" });
+  };
+
+  const onWheel = (e) => {
+    const el = rowRef.current;
+    if (!el) return;
+    if (Math.abs(e.deltaY) >= Math.abs(e.deltaX)) {
+      el.scrollLeft += e.deltaY;
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  };
+
+  const onPointerDown = (e) => {
+    const el = rowRef.current;
+    if (!el) return;
+    setDragging(true);
+    el.classList.add("row-dragging");
+    startX.current = (e.touches?.[0]?.clientX ?? e.clientX) || 0;
+    scrollStart.current = el.scrollLeft;
+  };
+  const onPointerMove = (e) => {
+    if (!dragging) return;
+    const el = rowRef.current;
+    const x = (e.touches?.[0]?.clientX ?? e.clientX) || 0;
+    const dx = x - startX.current;
+    el.scrollLeft = scrollStart.current - dx;
+    e.preventDefault();
+    e.stopPropagation();
+  };
+  const endDrag = () => {
+    setDragging(false);
+    rowRef.current?.classList.remove("row-dragging");
+  };
+
+  if (!items.length) return null;
 
   return (
-    <section className="py-12 md:py-16">
-      <div className="max-w-7xl mx-auto px-6 md:px-12 relative">
+    <section className="py-10 md:py-12">
+      <div className="max-w-7xl mx-auto px-6 md:px-12">
         {category && (
-          <h2 className="text-2xl md:text-3xl font-bold mb-6">{category}</h2>
+          <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-5">
+            {category}
+          </h2>
         )}
 
-        {/* Barrier atas & bawah */}
-        <div className="relative py-6 rounded-xl">
-          <Carousel
-            className="w-full"
-            opts={{ loop: true }}
+        <div className="relative z-0 group">
+          <div
+            ref={rowRef}
+            className="row-snap row-hide-scrollbar row-scroll-lock flex gap-4 overflow-x-auto scroll-smooth select-none"
+            onWheel={onWheel}
+            onMouseDown={onPointerDown}
+            onMouseMove={onPointerMove}
+            onMouseLeave={endDrag}
+            onMouseUp={endDrag}
+            onTouchStart={onPointerDown}
+            onTouchMove={onPointerMove}
+            onTouchEnd={endDrag}
           >
-            <CarouselContent className="-ml-4">
-              {items.map((item) => (
-                <CarouselItem
-                  key={item._id}
-                  className="pl-4 basis-1/2 md:basis-1/3 lg:basis-1/4"
-                >
-                  <div className="group relative rounded-2xl overflow-hidden hover:shadow-xl transition">
-                    <Link to={`/product/${item._id}`}>
-                      <div className="bg-gray-800">
-                        <img
-                          src={item.imgSrc}
-                          alt={item.name}
-                          className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
-                          onError={(e) => {
-                          e.target.onerror = null; 
-                          e.target.src = '/path/to/fallback-image.png'; 
-                           }}
-                        />
-                      </div>
-                      <div className="absolute bottom-0 left-0 right-0  text-white py-3 text-center">
-                        <h3 className="text-sm md:text-base font-semibold">
-                          {item.name}
-                        </h3>
-                        <p className="text-sm md:text-base font-medium">
-                          Rp{item.price.toLocaleString("id-ID")}
-                        </p>
-                      </div>
-                    </Link>
-                    <button
-                      onClick={() => handleAddToCart(item)}
-                      className="absolute top-3 right-3 inline-block bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-full px-3 py-1 text-xs font-semibold tracking-wide shadow-lg hover:scale-110 hover:shadow-xl transition-transform duration-300
-                      "
-                    >
-                      + Cart
-                    </button>
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
+            {items.map((item, idx) => (
+              <Card
+                key={item._id || idx}
+                item={item}
+                onAdd={() => handleAddToCart(item)}
+                index={idx + 1}
+              />
+            ))}
+          </div>
 
-            <CarouselPrevious className="absolute -left-8 top-1/2 -translate-y-1/2 w-12 h-70 rounded-full bg-gray-200/90 text-black font-bold hover:bg-gray-300 transition flex items-center justify-center shadow-lg z-10">
-              ‹
-            </CarouselPrevious>
-            <CarouselNext className="absolute -right-8 top-1/2 -translate-y-1/2 w-12 h-70 rounded-full bg-gray-200/90 text-black font-bold hover:bg-gray-300 transition flex items-center justify-center shadow-lg z-10">
-              ›
-            </CarouselNext>
-          </Carousel>
+          <div className="pointer-events-none absolute left-0 top-0 h-full w-10 bg-gradient-to-r from-white to-transparent dark:from-gray-950 opacity-0 group-hover:opacity-100 transition" />
+          <div className="pointer-events-none absolute right-0 top-0 h-full w-10 bg-gradient-to-l from-white to-transparent dark:from-gray-950 opacity-0 group-hover:opacity-100 transition" />
+
+          <ArrowButton side="left" onClick={() => scrollByCard(-1)} />
+          <ArrowButton side="right" onClick={() => scrollByCard(1)} />
         </div>
       </div>
     </section>
@@ -107,3 +120,64 @@ const ProductCart = ({ category, limit = 6 }) => {
 };
 
 export default ProductCart;
+
+const Card = ({ item, onAdd, index }) => {
+  return (
+    <div className="shrink-0 w-[65vw] xs:w-[52vw] sm:w-[40vw] md:w-[28vw] lg:w-[22vw] xl:w-[18vw] 2xl:w-[16vw] scroll-mx-6">
+      <div className="relative rounded-2xl overflow-hidden bg-white shadow-md hover:shadow-xl transition">
+        <Link to={`/product/${item._id}`} className="block">
+          <div className="relative aspect-[3/4] bg-gray-100">
+            <img
+              src={item.imgSrc}
+              alt={item.name}
+              className="absolute inset-0 w-full h-full object-cover"
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = "/fallback.png";
+              }}
+            />
+          </div>
+          <div className="p-3">
+            <h3 className="text-sm md:text-base font-semibold line-clamp-1">
+              {item.name}
+            </h3>
+            <p className="text-sm text-gray-500 line-clamp-2">{item.description}</p>
+          </div>
+        </Link>
+        <div className="px-3 pb-3 flex items-center justify-between">
+          <span className="text-base md:text-lg font-bold">
+            Rp{Number(item.price || 0).toLocaleString("id-ID")}
+          </span>
+          <button
+            onClick={onAdd}
+            className="px-4 py-1 text-sm inline-block bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-full uppercase font-semibold tracking-widest shadow-2xl hover:scale-105 transition-transform "
+          >
+            Add
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const ArrowButton = ({ side = "left", onClick }) => {
+  const isLeft = side === "left";
+  const pos = isLeft ? "left-1" : "right-1";
+  const icon = isLeft ? "‹" : "›";
+
+  return (
+    <div
+      className={`pointer-events-none hidden md:block absolute ${pos} top-1/2 -translate-y-1/2 z-10`}
+    >
+      <button
+        onClick={onClick}
+        className=" pointer-events-auto relative w-[120px] h-[120px] -mx-4 -my-10 rounded-full bg-transparent"
+        aria-label={isLeft ? "Scroll left" : "Scroll right"}
+      >
+        <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-10 w-10 inline-block bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-full uppercase font-semibold tracking-widest shadow-2xl hover:scale-105 transition-transform flex items-center justify-center text-xl">
+          {icon}
+        </span>
+      </button>
+    </div>
+  );
+};

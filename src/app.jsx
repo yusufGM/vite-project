@@ -1,22 +1,22 @@
-import { Routes, Route, Navigate, useLocation } from "react-router-dom";
-import { Suspense, lazy, useEffect } from "react";
-import Header from "./components/header.jsx";
-import Footer from "./components/footer.jsx";
-import CartDrawer from "./components/CartDrawer.jsx";
-import useUserStore from "./components/store/useUserStore.js";
-import useCartStore, { usePathListener } from "./components/store/useCartStore.js";
-import ScrollToTop from "./components/ui/ScrollToTop.jsx";
-import { Toaster } from "sonner";
-import ProductDetail from "./pages/productDetail.jsx";
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Suspense, lazy, useEffect } from 'react';
+import Header from './components/header.jsx';
+import Footer from './components/footer.jsx';
+import CartDrawer from './components/CartDrawer.jsx';
+import useUserStore from './components/store/useUserStore.js';
+import useCartStore, { usePathListener } from './components/store/useCartStore.js';
+import ScrollToTop from './components/ui/ScrollToTop.jsx';
+import ProductDetail from './pages/productDetail.jsx';
+import { Toaster } from 'sonner';
 
-const SuccessPage = lazy(() => import("./pages/successPage.jsx"));
-const HomePage = lazy(() => import("./pages/homePage.jsx"));
-const LoginPage = lazy(() => import("./pages/loginPage.jsx"));
-const SignUp = lazy(() => import("./pages/signUp.jsx"));
-const CheckoutPage = lazy(() => import("./pages/checkoutPage.jsx"));
-const StorePage = lazy(() => import("./pages/storePage.jsx"));
-const SalePage = lazy(() => import("./pages/salePage.jsx"));
-const AdminDashboard = lazy(() => import("./pages/adminDashboard.jsx"));
+const SuccessPage = lazy(() => import('./pages/successPage.jsx'));
+const HomePage = lazy(() => import('./pages/homePage.jsx'));
+const LoginPage = lazy(() => import('./pages/loginPage.jsx'));
+const SignUp = lazy(() => import('./pages/signUp.jsx'));
+const CheckoutPage = lazy(() => import('./pages/checkoutPage.jsx'));
+const StorePage = lazy(() => import('./pages/storePage.jsx'));
+const SalePage = lazy(() => import('./pages/salePage.jsx'));
+const AdminDashboard = lazy(() => import('./pages/adminDashboard.jsx'));
 
 function PrivateRoute({ children }) {
   const { token } = useUserStore();
@@ -24,53 +24,44 @@ function PrivateRoute({ children }) {
 }
 
 function AdminRoute({ children }) {
-  const { token, username } = useUserStore();
-  const isAdmin = username === "admin";
+  const { token, role } = useUserStore();
+  const isAdmin = role === 'admin';
   return token && isAdmin ? children : <Navigate to="/login" />;
 }
 
+const Spinner = () => (
+  <div className="flex items-center justify-center py-24">
+    <div className="animate-spin rounded-full h-10 w-10 border border-gray-300 border-t-gray-900" />
+  </div>
+);
+
 function App() {
   usePathListener();
-
   const location = useLocation();
-  const closeDrawer = useCartStore((state) => state.closeDrawer);
+  const closeDrawer = useCartStore((s) => s.closeDrawer);
 
   useEffect(() => {
     closeDrawer();
   }, [location.pathname, closeDrawer]);
 
   return (
-    <Suspense fallback={<div className="p-4 text-center">Loading...</div>}>
+    <Suspense fallback={<Spinner />}>
       <ScrollToTop />
-      <Header />
+      <Header className="sticky top-0 z-50 isolate" />
       <CartDrawer />
 
-      <div className="min-h-screen">
+      <div className="min-h-screen pt-16">
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignUp />} />
-          <Route
-            path="/checkout"
-            element={
-              <PrivateRoute>
-                <CheckoutPage />
-              </PrivateRoute>
-            }
-          />
-          <Route path="/success" element={
-            <SuccessPage />} />
-          <Route path="/storepage" element={<StorePage />} />  
+          <Route path="/checkout" element={<PrivateRoute><CheckoutPage /></PrivateRoute>} />
+          <Route path="/success" element={<SuccessPage />} />
+          <Route path="/store" element={<StorePage />} />
           <Route path="/sale" element={<SalePage />} />
           <Route path="/product/:id" element={<ProductDetail />} />
-          <Route
-            path="/admin/dashboard"
-            element={
-              <AdminRoute>
-                <AdminDashboard />
-              </AdminRoute>
-            }
-          />
+          <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+          <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </div>
 
