@@ -7,23 +7,19 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 const formatIDR = (n = 0) =>
   new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 })
     .format(Math.max(0, Number(n) || 0))
-    .replace(/\s/g, ""); // keep it tight (Rp123.456)
+    .replace(/\s/g, ""); 
 
 export default function CheckoutPage() {
   const { cart, clearCart } = useCartStore();
   const { token, username: storeUsername, email: storeEmail } = useUserStore();
-
   const [username, setUsername] = useState(storeUsername || "");
   const [email, setEmail] = useState(storeEmail || "");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [submitting, setSubmitting] = useState(false);
-
-  // Keep fields in sync if store updates after mount (e.g., user logs in)
   useEffect(() => {
     if (storeUsername && !username) setUsername(storeUsername);
     if (storeEmail && !email) setEmail(storeEmail);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [storeUsername, storeEmail]);
 
   const total = useMemo(
@@ -45,11 +41,10 @@ export default function CheckoutPage() {
 
   const normalizeCart = () =>
     cart.map((i) => ({
-      productId: i._id || i.id, // backend-friendly
+      productId: i._id || i.id, 
       name: i.name,
       price: Number(i.price) || 0,
       qty: Math.max(1, Number(i.qty) || 1),
-      // tambahkan varian/size jika ada: variant: i.variant, size: i.size, ...
     }));
 
   const redirectToPayment = (data) => {
@@ -57,7 +52,7 @@ export default function CheckoutPage() {
       data?.paymentUrl ||
       data?.redirect_url ||
       data?.invoice?.invoice_url ||
-      data?.data?.invoice_url || // beberapa SDK membungkus respons
+      data?.data?.invoice_url || 
       null;
     if (url) {
       clearCart();
@@ -83,7 +78,7 @@ export default function CheckoutPage() {
       email: email.trim(),
       whatsapp: phone.trim(),
       username: username.trim(),
-      total, // opsional: jika backend ingin cross-check
+      total, 
     };
 
     try {
@@ -96,7 +91,6 @@ export default function CheckoutPage() {
         body: JSON.stringify(payload),
       });
 
-      // try parse safely
       let data;
       try {
         data = await res.json();
@@ -116,7 +110,6 @@ export default function CheckoutPage() {
       }
 
       if (!redirectToPayment(data)) {
-        // fallback: beberapa backend mengembalikan {url: "..."}
         if (data?.url) {
           clearCart();
           window.location.assign(data.url);
@@ -135,8 +128,6 @@ export default function CheckoutPage() {
   return (
     <div className="max-w-2xl mx-auto px-4 py-8 pt-24">
       <h1 className="text-2xl font-bold mb-6">Checkout</h1>
-
-      {/* Fields tetap ditampilkan tapi sudah terisi; user tetap bisa edit */}
       <div className="mb-4">
         <label className="block mb-1 font-semibold">Nama</label>
         <input
@@ -173,7 +164,7 @@ export default function CheckoutPage() {
           placeholder="08xxxxxxxxxx"
           required
         />
-        <p className="text-xs text-gray-500 mt-1">Format: 0 di depan, 9–16 digit (contoh: 081234567890)</p>
+        <p className="text-xs text-gray-500 mt-1">Format: 0 di depan, 9–16 digit (contoh: 08**********)</p>
       </div>
 
       <div className="mb-4">
@@ -217,8 +208,6 @@ export default function CheckoutPage() {
       >
         {submitting ? "Memproses..." : "Bayar Sekarang"}
       </button>
-
-      {/* Tip: tampilkan API target agar jelas saat dev */}
       <p className="text-xs text-gray-400 mt-3">Endpoint: {API_URL}/checkout</p>
     </div>
   );

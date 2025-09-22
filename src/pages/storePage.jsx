@@ -61,7 +61,6 @@ function StorePage() {
     return list;
   }, [products, selectedCategory, filters]);
 
-  // ---- Pagination helpers ----
   const totalPages = useMemo(
     () => Math.max(1, Math.ceil(filtered.length / pageSize)),
     [filtered.length]
@@ -87,27 +86,20 @@ function StorePage() {
     }
     return arr;
   }, [page, totalPages]);
-
-  // Auto scroll ke atas area <main> saat ganti halaman
   useEffect(() => {
     if (mainRef.current) {
       mainRef.current.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }, [page, selectedCategory, filters]);
-
-  // Reset ke halaman 1 saat filter/kategori berubah
   useEffect(() => {
     setPage(1);
   }, [selectedCategory, filters]);
-
-  // Clamp page bila jumlah halaman menyusut (misal filter ketat)
   useEffect(() => {
     if (page > totalPages) setPage(totalPages);
   }, [totalPages, page]);
 
   return (
     <div className="h-full bg-gray-50 flex flex-col">
-      {/* Header store tetap diam di dalam area Store */}
       <header className="bg-white shadow-sm flex-shrink-0">
         <div className="container mx-auto px-4 py-4">
           <h1 className="text-2xl font-bold text-gray-800">Store</h1>
@@ -203,7 +195,6 @@ function StorePage() {
           </div>
         </aside>
 
-        {/* HANYA AREA INI YANG SCROLL + pagination */}
      <main ref={mainRef} className="flex-1 overflow-y-auto pr-2">
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -213,10 +204,8 @@ function StorePage() {
           <p className="text-center py-10 text-red-500">{error}</p>
         ) : (
           <>
-            {/* list produk */}
             <ProductList products={paginated} />
 
-            {/* pagination sticky di bawah */}
             <div className="sticky bottom-0 mt-6 bg-gray-50/90 backdrop-blur border-t">
               <div className="py-3 flex flex-wrap items-center justify-between gap-3">
                 <span className="text-sm text-gray-600 px-1">
